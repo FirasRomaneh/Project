@@ -4,8 +4,9 @@
 
 class GPSReader: public Reader{
     public:
-        GPSReader();
+        GPSReader(){
+            
+        }
         void Read(std::string, int) override;
-        void start() override;
 };
 

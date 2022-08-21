@@ -1,3 +1,4 @@
+#pragma once
 #include "local.h"
 
 class GPSType : public Type{
@@ -13,6 +14,9 @@ class GPSType : public Type{
         }
         std::pair<double, double> getData(){
             return this->data;
+        }
+        std::time_t getTimeStamp() override{
+            return TimeStamp;
         }
     private:
         std::pair<double, double> data;

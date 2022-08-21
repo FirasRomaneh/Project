@@ -7,15 +7,17 @@ DataStore* DataStore::getInstance(){
     return instance;
 }
 
-void DataStore::Write(Type newdata, int index){
+void DataStore::Write(Type* newdata, int index){
     AllData_Mutex.lock();
-    AllData.at(index) = newdata;
+    if(newdata != nullptr){
+        AllData.at(index) = newdata;
+    }
     AllData_Mutex.unlock();
 }
 
-std::vector <Type> DataStore::Read(){
+Type* DataStore::Read(int index){
     AllData_Mutex.lock();
-    std::vector <Type> SendData = AllData;
+    Type* SendData = AllData.at(index);
     AllData_Mutex.unlock();
     return SendData;
 }

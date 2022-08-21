@@ -1,3 +1,4 @@
+#pragma once
 #include "local.h"
 
 class DoubleType : public Type{
@@ -13,6 +14,9 @@ class DoubleType : public Type{
         }
         double getData(){
             return this->data;
+        }
+        std::time_t getTimeStamp() override{
+            return TimeStamp;
         }
     private:
         double data;

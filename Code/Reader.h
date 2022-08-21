@@ -5,9 +5,10 @@
 
 class Reader{
     public:
-        Reader();
+        Reader(){
+            
+        }
         virtual void Read(std::string, int) = 0;
-        virtual void start() = 0;
     protected:
         DataStore* DS = DataStore::getInstance();
         ClockManager* CM = ClockManager::getInstance(); 

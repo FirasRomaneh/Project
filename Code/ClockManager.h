@@ -10,9 +10,10 @@ class ClockManager{
         std::time_t getTS();
         static ClockManager* instance;
         void synct();
-        void start();
     private:
-        ClockManager();
+        ClockManager(){
+            
+        }
         std::time_t TS;
         std::mutex TS_Mutex;
 };

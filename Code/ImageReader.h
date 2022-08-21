@@ -4,8 +4,9 @@
 
 class ImageReader: public Reader{
     public:
-        ImageReader();
+        ImageReader(){
+            
+        }
         void Read(std::string, int) override;
-        void start() override;
 };
 

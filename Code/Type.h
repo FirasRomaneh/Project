@@ -11,9 +11,7 @@ class Type{
         Type(std::time_t TimeStamp){
             this->TimeStamp = TimeStamp;
         }
-        std::time_t getTimeStamp(){
-            return this->TimeStamp;
-        }
+        virtual std::time_t getTimeStamp() = 0;
         void setTimeStamp(std::time_t TimeStamp){
             this->TimeStamp = TimeStamp;
         }

@@ -1,14 +1,16 @@
 #include "DoubleReader.h"
 
 void DoubleReader::Read(std::string path, int Readindex){
+
     std::ifstream ReadFile(path);
     std::string Read;
     std::getline(ReadFile, Read);
-    DoubleType newdouble = DoubleType();
+    DoubleType* newdouble = new DoubleType();
     std::time_t newTime = 0;
-    newdouble.setTimeStamp(newTime);
+    newdouble->setTimeStamp(newTime);
     bool Write = true;
-    while (true){
+    extern int Work;
+    while (Work){
         if(Write){
             std::getline(ReadFile, Read);
             if(!ReadFile.eof()){
@@ -19,8 +21,8 @@ void DoubleReader::Read(std::string path, int Readindex){
                     split.push_back(temp);
                 }
                 newTime = std::stod(split.at(0));
-                newdouble.setTimeStamp(newTime);
-                newdouble.setData(std::stod(split.at(1)));
+                newdouble->setTimeStamp(newTime);
+                newdouble->setData(std::stod(split.at(1)));
             } else{
                 goto finish;
             }
@@ -34,9 +36,4 @@ void DoubleReader::Read(std::string path, int Readindex){
     }
     finish:
     ReadFile.close();
-}
-
-void DoubleReader::start(){
-    std::thread DoubleRead(&DoubleReader::Read, this);
-    DoubleRead.join();
 }

@@ -61,6 +61,10 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "bitset": "cpp",
+        "unordered_set": "cpp",
+        "regex": "cpp",
+        "future": "cpp"
     }
 }

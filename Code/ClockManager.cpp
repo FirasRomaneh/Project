@@ -22,16 +22,17 @@ std::time_t ClockManager::getTS(){
 
 void ClockManager::synct(){
     DataStore* DS = DataStore::getInstance();
-    while (true){
-        auto T = DS->Read();
-        auto Front = T.at(index::Front_image);
-        if(Front.getTimeStamp() != ClockManager::getTS()){
-            ClockManager::setTS(Front.getTimeStamp());
+    extern int Work;
+    while (Work){
+        auto Front = DS->Read(index::Front_image);
+        std::time_t NewTS;
+        if(Front == nullptr){
+            NewTS = 0;
+        } else {
+            NewTS = Front->getTimeStamp();
+        }
+        if(NewTS != ClockManager::getTS()){
+            ClockManager::setTS(NewTS);
         }
     }
-}
-
-void ClockManager::start(){
-    std::thread SYNC(&ClockManager::synct, this);
-    SYNC.join();
 }

@@ -4,8 +4,9 @@
 
 class DoubleReader: public Reader{
     public:
-        DoubleReader();
+        DoubleReader(){
+            
+        }
         void Read(std::string, int) override;
-        void start() override;
 };
 

@@ -6,12 +6,22 @@
 class DataStore{
     public:
         static DataStore* getInstance();
-        void Write(Type, int);
-        std::vector <Type> Read();
+        void Write(Type*, int);
+        Type* Read(int);
         static DataStore* instance;
     private:
-        DataStore();
-        std::vector <Type> AllData;
+        DataStore(){
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+            AllData.push_back(nullptr);
+        };
+        std::vector <Type*> AllData;
         std::mutex AllData_Mutex;
 };
 

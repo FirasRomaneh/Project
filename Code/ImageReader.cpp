@@ -2,27 +2,35 @@
 
 void ImageReader::Read(std::string path, int Readindex){
     std::vector<std::string> images;
-    cv::glob(path + "*.png", images, false);
-    int Imageindex = 0;
-    ImageType newImage = ImageType();
-    while (true){
+    cv::glob(path + "*.jpeg", images, false);
+    unsigned int Imageindex = 0;
+    ImageType* newImage = new ImageType();
+    extern int Work;
+    while (Work){
         std::string ImagePath = images.at(Imageindex);
         std::string ImageName = ImagePath;
         ImageName.erase(0, path.length());
-        ImageName.erase((ImageName.length()-4), ImageName.length());
+        ImageName.erase((ImageName.length()-5), ImageName.length());
         std::time_t ImageTime = std::stod(ImageName);
-        if(CM->getTS() >= ImageTime){
+        if(Readindex == 1){
             cv::Mat ImageData = cv::imread(ImagePath);
-            newImage.setTimeStamp(ImageTime);
-            newImage.setData(ImageData);
-            // ImageType newImage = ImageType(ImageTime, ImageData);
+            newImage->setTimeStamp(ImageTime);
+            newImage->setData(ImageData);
             DS->Write(newImage, Readindex);
             Imageindex++;
+            if(Imageindex == images.size()){
+                goto finish;
+            }
+        } else if((CM->getTS() >= ImageTime)){
+            cv::Mat ImageData = cv::imread(ImagePath);
+            newImage->setTimeStamp(ImageTime);
+            newImage->setData(ImageData);
+            DS->Write(newImage, Readindex);
+            Imageindex++;
+            if(Imageindex == images.size()){
+                goto finish;
+            }
         }
     }
-}
-
-void ImageReader::start(){
-    std::thread ImageRead(&ImageReader::Read, this);
-    ImageRead.join();
+    finish:;
 }

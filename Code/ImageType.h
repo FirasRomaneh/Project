@@ -19,6 +19,9 @@ class ImageType : public Type{
         cv::Mat getData(){
             return this->data;
         }
+        std::time_t getTimeStamp() override{
+            return TimeStamp;
+        }
     private:
         cv::Mat data;
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <mutex>
 #include <ctime>
@@ -7,7 +8,6 @@
 #include <fstream>
 #include "Type.h"
 
-
 enum index{
     Left_image = 0,
     Front_image,
@@ -16,6 +16,6 @@ enum index{
     GPS,
     Speed,
     Steering,
-    Break,
+    Brake,
     Throttle,
 };
