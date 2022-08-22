@@ -18,7 +18,16 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-    void updateData();
+    void updateFront();
+    void updateBack();
+    void updateLeft();
+    void updateRigth();
+    void updateGPS();
+    void updateSpeed();
+    void updateSteering();
+    void updateBrake();
+    void updateThrottle();
+    bool MatIsEqual(const cv::Mat, const cv::Mat);
     
 private:
     Ui::MainWindow *ui;

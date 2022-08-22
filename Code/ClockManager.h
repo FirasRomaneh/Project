@@ -12,7 +12,7 @@ class ClockManager{
         void synct();
     private:
         ClockManager(){
-            
+            TS = 0;
         }
         std::time_t TS;
         std::mutex TS_Mutex;

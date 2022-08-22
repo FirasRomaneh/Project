@@ -26,13 +26,11 @@ void ClockManager::synct(){
     while (Work){
         auto Front = DS->Read(index::Front_image);
         std::time_t NewTS;
-        if(Front == nullptr){
-            NewTS = 0;
-        } else {
+        if(Front != nullptr){
             NewTS = Front->getTimeStamp();
-        }
-        if(NewTS != ClockManager::getTS()){
-            ClockManager::setTS(NewTS);
+            if(NewTS != ClockManager::getTS()){
+                ClockManager::setTS(NewTS);
+            }
         }
     }
 }
