@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "Code/ui_mainwindow.h"
+#include <unistd.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -7,249 +8,258 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     DS = DataStore::getInstance();
+    connect(this, SIGNAL(SignalupdateFront(cv::Mat)), this, SLOT(updateFront(cv::Mat)), Qt::DirectConnection);
+    connect(this, SIGNAL(SignalupdateBack(cv::Mat)), this, SLOT(updateBack(cv::Mat)), Qt::DirectConnection);
+    connect(this, SIGNAL(SignalupdateLeft(cv::Mat)), this, SLOT(updateLeft(cv::Mat)), Qt::DirectConnection);
+    connect(this, SIGNAL(SignalupdateRigth(cv::Mat)), this, SLOT(updateRigth(cv::Mat)), Qt::DirectConnection);
+    connect(this, SIGNAL(SignalupdateGPS(std::pair<double, double>)), this, SLOT(updateGPS(std::pair<double, double>)), Qt::DirectConnection);
+    connect(this, SIGNAL(SignalupdateSpeed(double)), this, SLOT(updateSpeed(double)));
+    connect(this, SIGNAL(SignalupdateSteering(double)), this, SLOT(updateSteering(double)));
+    connect(this, SIGNAL(SignalupdateBrake(double)), this, SLOT(updateBrake(double)));
+    connect(this, SIGNAL(SignalupdateThrottle(double)), this, SLOT(updateThrottle(double)));
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-
-void MainWindow::updateFront(){
+void MainWindow::UIData(){
     cv::Mat image;
-    cv::Mat LastFrontImage;
-    int indexFro = 0;
-    Type* N = nullptr;
     ImageType* A = nullptr;
+    GPSType* G = nullptr;
+    DoubleType* D = nullptr;
     extern int Work;
     while (Work){
-        N = DS->Read(index::Front_image);
-        if(N != nullptr){
-            A = dynamic_cast<ImageType*>(N);
+        A = dynamic_cast<ImageType*>(DS->Read(index::Front_image));
+        if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if (!LastFrontImage.empty()){
-                    if(!MatIsEqual(image, LastFrontImage)){
+                if(FrontMutex.try_lock()){
+                    if (!LastFrontImage.empty()){
+                        if(!MatIsEqual(image, LastFrontImage)){
+                            LastFrontImage = image.clone();
+                        }
+                    } else{
                         LastFrontImage = image.clone();
-                        cv::resize(image, image, cv::Size(700, 325), cv::INTER_LINEAR);
-                        ui->Front->setPixmap(
-                        QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                        QImage::Format_RGB888)));
-                        ui->Front->update();
-                        indexFro++;
-                        std::cout << indexFro << std::endl;
                     }
-                } else{
-                    LastFrontImage = image.clone();
-                    cv::resize(image, image, cv::Size(700, 325), cv::INTER_LINEAR);
-                    ui->Front->setPixmap(
-                    QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                    QImage::Format_RGB888)));
-                    ui->Front->update();
-                    indexFro++;
-                    std::cout << "Ftr" << std::endl;	
-                }
+                    FrontMutex.unlock(); 
+                } 
             }
         }
-    }
-}
-
-void MainWindow::updateBack(){
-    cv::Mat image;
-    cv::Mat LastBackImage;
-    Type* N = nullptr;
-    ImageType* A = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Back_image);
-        if(N != nullptr){
-            A = dynamic_cast<ImageType*>(N);
+        A = dynamic_cast<ImageType*>(DS->Read(index::Back_image));
+        if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if (!LastBackImage.empty()){
-                    if(!MatIsEqual(image, LastBackImage)){
+                if(BackMutex.try_lock()){
+                    if (!LastBackImage.empty()){
+                        if(!MatIsEqual(image, LastBackImage)){
+                            LastBackImage = image.clone();
+                        }
+                    } else{
                         LastBackImage = image.clone();
-                        cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                        ui->Back->setPixmap(
-                        QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                        QImage::Format_RGB888)));
-                        ui->Back->update();	
                     }
-                } else{
-                    LastBackImage = image.clone();
-                    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                    ui->Back->setPixmap(
-                    QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                    QImage::Format_RGB888)));
-                    ui->Back->update();	
+                    BackMutex.unlock();
                 }
             }
         }
-    }
-}
-
-void MainWindow::updateLeft(){
-    cv::Mat image;
-    cv::Mat LastLeftImage;
-    Type* N = nullptr;
-    ImageType* A = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Left_image);
-        if(N != nullptr){
-            A = dynamic_cast<ImageType*>(N);
+        A = dynamic_cast<ImageType*>(DS->Read(index::Left_image));
+        if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if (!LastLeftImage.empty()){
-                    if(!MatIsEqual(image, LastLeftImage)){
+                if(LeftMutex.try_lock()){
+                    if (!LastLeftImage.empty()){
+                        if(!MatIsEqual(image, LastLeftImage)){
+                            LastLeftImage = image.clone();
+                        }
+                    } else{
                         LastLeftImage = image.clone();
-                        cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                        ui->Left->setPixmap(
-                        QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                        QImage::Format_RGB888)));
-                        ui->Left->update();	
                     }
-                } else{
-                    LastLeftImage = image.clone();
-                    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                    ui->Left->setPixmap(
-                    QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                    QImage::Format_RGB888)));
-                    ui->Left->update();	
+                    LeftMutex.unlock();
                 }
             }
         }
-    }
-}
-
-void MainWindow::updateRigth(){
-    cv::Mat image;
-    cv::Mat LastRigthImage;
-    Type* N = nullptr;
-    ImageType* A = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Rigth_image);
-        if(N != nullptr){
-            A = dynamic_cast<ImageType*>(N);
+        A = dynamic_cast<ImageType*>(DS->Read(index::Rigth_image));
+        if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if (!LastRigthImage.empty()){
-                    if(!MatIsEqual(image, LastRigthImage)){
+                if(RigthMutex.try_lock()){
+                    if (!LastRigthImage.empty()){
+                        if(!MatIsEqual(image, LastRigthImage)){
+                            LastRigthImage = image.clone();
+                        }
+                    } else{
                         LastRigthImage = image.clone();
-                        cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                        ui->Rigth->setPixmap(
-                        QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                        QImage::Format_RGB888)));
-                        ui->Rigth->update();	
                     }
-                } else{
-                    LastRigthImage = image.clone();
-                    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
-                    ui->Rigth->setPixmap(
-                    QPixmap::fromImage(QImage(image.data, image.cols, image.rows, image.step, 
-                    QImage::Format_RGB888)));
-                    ui->Rigth->update();	
+                    RigthMutex.unlock();
                 }
             }
         }
-    }
-}
-
-void MainWindow::updateGPS(){
-    Type* N = nullptr;
-    GPSType* D = nullptr;
-    std::pair<double,double> LastGPS;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::GPS);
-            if(N != nullptr){
-                D = dynamic_cast<GPSType*>(N);
-                auto GPSData = D->getData();
+        G = dynamic_cast<GPSType*>(DS->Read(index::GPS));
+        if(G != nullptr){
+            if(GPSMutex.try_lock()){
+                auto GPSData = G->getData();
                 if((GPSData.first != LastGPS.first) || (GPSData.second != LastGPS.second)){
                     LastGPS.first = GPSData.first;
                     LastGPS.second = GPSData.second;
-                    ui->GPSLabel->setText("  GPS: " + QString::number(GPSData.first) + ", " + QString::number(GPSData.second));
-                    ui->GPSLabel->update();	
                 }
+                GPSMutex.unlock();
             }
+        }
+
+        D = dynamic_cast<DoubleType*>(DS->Read(index::Speed));
+        if(D != nullptr){
+            if(SpeedMutex.try_lock()){
+                auto SpeedData = D->getData();
+                if(SpeedData != LastSpeed){
+                    LastSpeed = SpeedData;
+                }
+                SpeedMutex.unlock();
+            }
+        }
+
+        D = dynamic_cast<DoubleType*>(DS->Read(index::Steering));
+        if(D != nullptr){
+            if(SteeringMutex.try_lock()){
+                auto SteeringData = D->getData();
+                if(SteeringData != LastSteering){
+                    LastSteering = SteeringData;
+                }
+                SteeringMutex.unlock();
+            }
+        }
+
+        D = dynamic_cast<DoubleType*>(DS->Read(index::Brake));
+        if(D != nullptr){
+            if(BrakeMutex.try_lock()){
+                auto BrakeData = D->getData();
+                if(BrakeData != LastBrake){
+                    LastBrake = BrakeData;
+                }
+                BrakeMutex.unlock();
+            }
+        }
+
+        D = dynamic_cast<DoubleType*>(DS->Read(index::Throttle));
+        if(D != nullptr){
+            if(ThrottleMutex.try_lock()){
+                auto ThrottleData = D->getData();
+                if(ThrottleData != LastThrottle){
+                    LastThrottle = ThrottleData;
+                }
+                ThrottleMutex.unlock();
+            }
+        }    
     }
 }
-
-void MainWindow::updateSpeed(){
-    double LastSpeed = -10000000.015655298284;
-    Type* N = nullptr;
-    DoubleType* f = nullptr;
+void MainWindow::UpdateUI(){
     extern int Work;
-    while (Work){
-        N = DS->Read(index::Speed);
-        if(N != nullptr){
-            f = dynamic_cast<DoubleType*>(N);
-            auto SpeedData = f->getData();
-            if(SpeedData != LastSpeed){
-                LastSpeed = SpeedData;
-                ui->SpeedLabel->setText("  Speed: " + QString::number(SpeedData));
-                ui->SpeedLabel->update();	
+    while(Work){
+
+        if(FrontMutex.try_lock()){
+            if(!LastFrontImage.empty()){
+                emit SignalupdateFront(LastFrontImage);
+            } 
+            FrontMutex.unlock();
+        }
+
+        if(LeftMutex.try_lock()){
+            if(!LastLeftImage.empty()){
+                emit SignalupdateLeft(LastLeftImage);
             }
+            LeftMutex.unlock();
+        }
+
+        if(BackMutex.try_lock()){
+            if(!LastBackImage.empty()){
+                emit SignalupdateBack(LastBackImage);
+            } 
+            BackMutex.unlock();
+        }
+
+        if(RigthMutex.try_lock()){
+            if(!LastRigthImage.empty()){
+                emit SignalupdateRigth(LastRigthImage);
+            }
+            RigthMutex.unlock();
+        }
+
+        if(GPSMutex.try_lock()){
+            emit SignalupdateGPS(LastGPS);
+            GPSMutex.unlock();
+        }
+
+        if(SpeedMutex.try_lock()){
+            emit SignalupdateSpeed(LastSpeed);
+            SpeedMutex.unlock();
+        }        
+        
+        if(SteeringMutex.try_lock()){
+            emit SignalupdateSteering(LastSteering);
+            SteeringMutex.unlock();
+        }        
+        
+        if(BrakeMutex.try_lock()){
+            emit SignalupdateBrake(LastBrake);
+            BrakeMutex.unlock();
+        }
+
+        if(ThrottleMutex.try_lock()){
+            emit SignalupdateThrottle(LastThrottle);
+            ThrottleMutex.unlock();
         }
     }
 }
-
-void MainWindow::updateSteering(){
-    double LastSteering = -10000000.015655298284;
-    Type* N = nullptr;
-    DoubleType* f = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Steering);
-        if(N != nullptr){
-            f = dynamic_cast<DoubleType*>(N);
-            auto SteeringData = f->getData();
-            if(SteeringData != LastSteering){
-                LastSteering = SteeringData;
-                ui->SteeringLabel->setText("  Steering: " + QString::number(SteeringData));
-                ui->SteeringLabel->update();	
-            }
-        } 
-    }
+void MainWindow::updateFront(cv::Mat image){
+    cv::resize(image, image, cv::Size(700, 325), cv::INTER_LINEAR);
+    ui->Front->setPixmap(QPixmap::fromImage(QImage(image.data, image.cols, 
+    image.rows, image.step, QImage::Format_RGB888)));
+    ui->Front->update();
 }
 
-void MainWindow::updateBrake(){
-    double LastBrake = -10000000.015655298284;
-    Type* N = nullptr;
-    DoubleType* f = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Brake);
-        if(N != nullptr){
-            f = dynamic_cast<DoubleType*>(N);
-            auto BrakeData = f->getData();
-            if(BrakeData != LastBrake){
-                LastBrake = BrakeData;
-                ui->BrakeLabel->setText("  Brake: " + QString::number(BrakeData));
-                ui->BrakeLabel->update();	
-            }
-        }
-    }
-    
+void MainWindow::updateBack(cv::Mat image){
+    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
+    ui->Back->setPixmap(QPixmap::fromImage(QImage(image.data, image.cols, 
+    image.rows, image.step, QImage::Format_RGB888)));
+    ui->Back->update();
 }
 
-void MainWindow::updateThrottle(){
-    double LastThrottle = -10000000.015655298284;
-    Type* N = nullptr;
-    DoubleType* f = nullptr;
-    extern int Work;
-    while (Work){
-        N = DS->Read(index::Throttle);
-        if(N != nullptr){
-            f = dynamic_cast<DoubleType*>(N);
-            auto ThrottleData = f->getData();
-            if(ThrottleData != LastThrottle){
-                LastThrottle = ThrottleData;
-                ui->ThrottleLabel->setText("  Throttle: " + QString::number(ThrottleData));
-                ui->ThrottleLabel->update();	
-            }
-        }     
-    }
+void MainWindow::updateLeft(cv::Mat image){
+    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
+    ui->Left->setPixmap(QPixmap::fromImage(QImage(image.data, image.cols, 
+    image.rows, image.step, QImage::Format_RGB888)));
+    ui->Left->update();
+}
+
+void MainWindow::updateRigth(cv::Mat image){
+    cv::resize(image, image, cv::Size(300, 325), cv::INTER_LINEAR);
+    ui->Rigth->setPixmap(QPixmap::fromImage(QImage(image.data, image.cols, 
+    image.rows, image.step, QImage::Format_RGB888)));
+    ui->Rigth->update();
+}
+
+void MainWindow::updateGPS(std::pair<double, double> GPS){
+    ui->GPSLabel->setText("  GPS: " + QString::number(GPS.first) + ", " + QString::number(GPS.second));
+    ui->GPSLabel->update();	
+}
+
+void MainWindow::updateSpeed(double Speed){
+    ui->SpeedLabel->setText("  Speed: " + QString::number(Speed));
+    ui->SpeedLabel->update();	
+}
+
+void MainWindow::updateSteering(double Steering){
+    ui->SteeringLabel->setText("  Steering: " + QString::number(Steering));
+    ui->SteeringLabel->update();	
+}
+
+void MainWindow::updateBrake(double Brake){
+    ui->BrakeLabel->setText("  Brake: " + QString::number(Brake));
+    ui->BrakeLabel->update();	
+}
+
+void MainWindow::updateThrottle(double Throttle){
+    ui->ThrottleLabel->setText("  Throttle: " + QString::number(Throttle));
+    ui->ThrottleLabel->update();	
 }
 
 bool MainWindow::MatIsEqual(const cv::Mat mat1, const cv::Mat mat2){
