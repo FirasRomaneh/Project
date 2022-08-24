@@ -8,9 +8,9 @@ DataStore* DataStore::instance = nullptr;
 int Work = 1;
 
 int main(int argc, char *argv[]){
-    std::string path = "/home/firas/Desktop/sample_trip";
-    // std::cout << "Enter The Path Of Files:  ";
-    // std::cin >> path;
+    std::string path;
+    std::cout << "Enter The Path Of Files:  ";
+    std::cin >> path;
     QApplication a(argc, argv);
     Driver* GO = new Driver(path);
     std::thread Di(&Driver::start, GO);
