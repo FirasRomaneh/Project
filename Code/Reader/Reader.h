@@ -1,7 +1,7 @@
 #ifndef READER_H
 #define READER_H
 
-#include "ClockManager.h"
+#include "Code/ClockManager/ClockManager.h"
 
 class Reader{
     public:

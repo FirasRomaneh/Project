@@ -1,7 +1,6 @@
 #include <iostream>
 #include <qt5/QtWidgets/QApplication>
-#include "Driver.h"
- #include "opencv2/opencv.hpp"
+#include "Code/Driver/Driver.h"
 
 ClockManager* ClockManager::instance = nullptr;
 DataStore* DataStore::instance = nullptr;

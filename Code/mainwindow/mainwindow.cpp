@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "Code/ui_mainwindow.h"
+#include "Code/mainwindow/ui_mainwindow.h"
 #include <unistd.h>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -34,31 +34,29 @@ void MainWindow::UIData(){
         if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if(FrontMutex.try_lock()){
-                    if (!LastFrontImage.empty()){
-                        if(!MatIsEqual(image, LastFrontImage)){
-                            LastFrontImage = image.clone();
-                        }
-                    } else{
+                if (!LastFrontImage.empty()){
+                    if(!MatIsEqual(image, LastFrontImage)){
                         LastFrontImage = image.clone();
+                        emit SignalupdateFront(image);
                     }
-                    FrontMutex.unlock(); 
-                } 
+                } else{
+                    LastFrontImage = image.clone();
+                    emit SignalupdateFront(image);
+                }
             }
         }
         A = dynamic_cast<ImageType*>(DS->Read(index::Back_image));
         if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if(BackMutex.try_lock()){
-                    if (!LastBackImage.empty()){
-                        if(!MatIsEqual(image, LastBackImage)){
-                            LastBackImage = image.clone();
-                        }
-                    } else{
+                if (!LastBackImage.empty()){
+                    if(!MatIsEqual(image, LastBackImage)){
                         LastBackImage = image.clone();
+                        emit SignalupdateBack(image);
                     }
-                    BackMutex.unlock();
+                } else{
+                    LastBackImage = image.clone();
+                    emit SignalupdateBack(image);
                 }
             }
         }
@@ -66,149 +64,80 @@ void MainWindow::UIData(){
         if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if(LeftMutex.try_lock()){
-                    if (!LastLeftImage.empty()){
-                        if(!MatIsEqual(image, LastLeftImage)){
-                            LastLeftImage = image.clone();
-                        }
-                    } else{
+                if (!LastLeftImage.empty()){
+                    if(!MatIsEqual(image, LastLeftImage)){
                         LastLeftImage = image.clone();
+                        emit SignalupdateLeft(image);
                     }
-                    LeftMutex.unlock();
-                }
+                } else{
+                    LastLeftImage = image.clone();
+                    emit SignalupdateLeft(image);
+                } 
             }
         }
         A = dynamic_cast<ImageType*>(DS->Read(index::Rigth_image));
         if(A != nullptr){
             image = A->getData();
             if(!image.empty()){
-                if(RigthMutex.try_lock()){
-                    if (!LastRigthImage.empty()){
-                        if(!MatIsEqual(image, LastRigthImage)){
-                            LastRigthImage = image.clone();
-                        }
-                    } else{
+                if (!LastRigthImage.empty()){
+                    if(!MatIsEqual(image, LastRigthImage)){
                         LastRigthImage = image.clone();
+                        emit SignalupdateRigth(image);
                     }
-                    RigthMutex.unlock();
+                } else{
+                    LastRigthImage = image.clone();
+                    emit SignalupdateRigth(image);
                 }
             }
         }
         G = dynamic_cast<GPSType*>(DS->Read(index::GPS));
         if(G != nullptr){
-            if(GPSMutex.try_lock()){
-                auto GPSData = G->getData();
-                if((GPSData.first != LastGPS.first) || (GPSData.second != LastGPS.second)){
-                    LastGPS.first = GPSData.first;
-                    LastGPS.second = GPSData.second;
-                }
-                GPSMutex.unlock();
+            auto GPSData = G->getData();
+            if((GPSData.first != LastGPS.first) || (GPSData.second != LastGPS.second)){
+                LastGPS.first = GPSData.first;
+                LastGPS.second = GPSData.second;
+                emit SignalupdateGPS(GPSData);
             }
         }
 
         D = dynamic_cast<DoubleType*>(DS->Read(index::Speed));
         if(D != nullptr){
-            if(SpeedMutex.try_lock()){
-                auto SpeedData = D->getData();
-                if(SpeedData != LastSpeed){
-                    LastSpeed = SpeedData;
-                }
-                SpeedMutex.unlock();
+            auto SpeedData = D->getData();
+            if(SpeedData != LastSpeed){
+                LastSpeed = SpeedData;
+                emit SignalupdateSpeed(SpeedData);
             }
         }
 
         D = dynamic_cast<DoubleType*>(DS->Read(index::Steering));
         if(D != nullptr){
-            if(SteeringMutex.try_lock()){
-                auto SteeringData = D->getData();
-                if(SteeringData != LastSteering){
-                    LastSteering = SteeringData;
-                }
-                SteeringMutex.unlock();
+            auto SteeringData = D->getData();
+            if(SteeringData != LastSteering){
+                LastSteering = SteeringData;
+                emit SignalupdateSteering(SteeringData);
             }
         }
 
         D = dynamic_cast<DoubleType*>(DS->Read(index::Brake));
         if(D != nullptr){
-            if(BrakeMutex.try_lock()){
-                auto BrakeData = D->getData();
-                if(BrakeData != LastBrake){
-                    LastBrake = BrakeData;
-                }
-                BrakeMutex.unlock();
+            auto BrakeData = D->getData();
+            if(BrakeData != LastBrake){
+                LastBrake = BrakeData;
+                emit SignalupdateBrake(BrakeData);
             }
         }
 
         D = dynamic_cast<DoubleType*>(DS->Read(index::Throttle));
         if(D != nullptr){
-            if(ThrottleMutex.try_lock()){
-                auto ThrottleData = D->getData();
-                if(ThrottleData != LastThrottle){
-                    LastThrottle = ThrottleData;
-                }
-                ThrottleMutex.unlock();
+            auto ThrottleData = D->getData();
+            if(ThrottleData != LastThrottle){
+                LastThrottle = ThrottleData;
+                emit SignalupdateThrottle(ThrottleData);
             }
         }    
     }
 }
-void MainWindow::UpdateUI(){
-    extern int Work;
-    while(Work){
 
-        if(FrontMutex.try_lock()){
-            if(!LastFrontImage.empty()){
-                emit SignalupdateFront(LastFrontImage);
-            } 
-            FrontMutex.unlock();
-        }
-
-        if(LeftMutex.try_lock()){
-            if(!LastLeftImage.empty()){
-                emit SignalupdateLeft(LastLeftImage);
-            }
-            LeftMutex.unlock();
-        }
-
-        if(BackMutex.try_lock()){
-            if(!LastBackImage.empty()){
-                emit SignalupdateBack(LastBackImage);
-            } 
-            BackMutex.unlock();
-        }
-
-        if(RigthMutex.try_lock()){
-            if(!LastRigthImage.empty()){
-                emit SignalupdateRigth(LastRigthImage);
-            }
-            RigthMutex.unlock();
-        }
-
-        if(GPSMutex.try_lock()){
-            emit SignalupdateGPS(LastGPS);
-            GPSMutex.unlock();
-        }
-
-        if(SpeedMutex.try_lock()){
-            emit SignalupdateSpeed(LastSpeed);
-            SpeedMutex.unlock();
-        }        
-        
-        if(SteeringMutex.try_lock()){
-            emit SignalupdateSteering(LastSteering);
-            SteeringMutex.unlock();
-        }        
-        
-        if(BrakeMutex.try_lock()){
-            emit SignalupdateBrake(LastBrake);
-            BrakeMutex.unlock();
-        }
-
-        if(ThrottleMutex.try_lock()){
-            emit SignalupdateThrottle(LastThrottle);
-            ThrottleMutex.unlock();
-        }
-    }
-}
 void MainWindow::updateFront(cv::Mat image){
     cv::resize(image, image, cv::Size(700, 325), cv::INTER_LINEAR);
     ui->Front->setPixmap(QPixmap::fromImage(QImage(image.data, image.cols, 

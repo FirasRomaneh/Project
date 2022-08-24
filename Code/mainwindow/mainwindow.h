@@ -2,10 +2,10 @@
 #define MAINWINDOW_H
 
 #include <qt5/QtWidgets/QMainWindow>
-#include "DataStore.h"
-#include "GPSType.h"
-#include "ImageType.h"
-#include "DoubleType.h"
+#include "Code/DataStore/DataStore.h"
+#include "Code/GPSType/GPSType.h"
+#include "Code/ImageType/ImageType.h"
+#include "Code/DoubleType/DoubleType.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,7 +19,6 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void UIData();
-    void UpdateUI();
 
 private slots:
     void updateFront(cv::Mat);
@@ -51,19 +50,10 @@ private:
     cv::Mat LastBackImage;
     cv::Mat LastLeftImage;
     cv::Mat LastRigthImage;
-    std::mutex FrontMutex;
-    std::mutex BackMutex;
-    std::mutex LeftMutex;
-    std::mutex RigthMutex;
     std::pair<double,double> LastGPS;
-    std::mutex GPSMutex;
     double LastSpeed = -10000000.015655298284;
     double LastSteering = -10000000.015655298284;
     double LastBrake = -10000000.015655298284;
     double LastThrottle = -10000000.015655298284;
-    std::mutex SpeedMutex; 
-    std::mutex SteeringMutex; 
-    std::mutex BrakeMutex; 
-    std::mutex ThrottleMutex;
 };
 #endif // MAINWINDOW_H

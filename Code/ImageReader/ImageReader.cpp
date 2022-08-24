@@ -17,6 +17,7 @@ void ImageReader::Read(std::string path, int Readindex){
             newImage->setTimeStamp(ImageTime);
             newImage->setData(ImageData);
             DS->Write(newImage, Readindex);
+            usleep(14000);
             Imageindex++;
             if(Imageindex == images.size()){
                 goto finish;
@@ -26,6 +27,7 @@ void ImageReader::Read(std::string path, int Readindex){
             newImage->setTimeStamp(ImageTime);
             newImage->setData(ImageData);
             DS->Write(newImage, Readindex);
+            usleep(14000);
             Imageindex++;
             if(Imageindex == images.size()){
                 goto finish;

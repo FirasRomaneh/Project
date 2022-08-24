@@ -1,10 +1,10 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-#include "GPSReader.h"
-#include "ImageReader.h"
-#include "DoubleReader.h"
-#include "mainwindow.h"
+#include "Code/GPSReader/GPSReader.h"
+#include "Code/ImageReader/ImageReader.h"
+#include "Code/DoubleReader/DoubleReader.h"
+#include "Code/mainwindow/mainwindow.h"
 
 class Driver{
     public:

@@ -1,7 +1,7 @@
 #ifndef IMAGETYPE_H
 #define IMAGETYPE_H
 
-#include "local.h"
+#include "Code/local/local.h"
 #include <opencv2/opencv.hpp>
 
 

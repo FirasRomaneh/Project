@@ -1,5 +1,5 @@
-#include "Reader.h"
-#include "ImageType.h"
+#include "Code/Reader/Reader.h"
+#include "Code/ImageType/ImageType.h"
 
 
 class ImageReader: public Reader{

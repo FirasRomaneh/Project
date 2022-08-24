@@ -15,7 +15,6 @@ void Driver::start(){
     std::thread ClockManagerThread(&ClockManager::synct, CM);
     //UI
     std::thread UIThread(&MainWindow::UIData, UI);
-    std::thread UIUpdateThread(&MainWindow::UpdateUI, UI);
     /////////////////////////////////////////////////////////////
     //FrontImage
     std::thread FrontThread(&ImageReader::Read, IMR, path+"/3d_images/1/left/", index::Front_image);
@@ -60,6 +59,5 @@ void Driver::start(){
     FrontThread.join();
     ////////////////////////////////////////////////////////////////////
     ClockManagerThread.join();
-    UIUpdateThread.join();
     UIThread.join();
 }

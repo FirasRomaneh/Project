@@ -1,5 +1,5 @@
-#include "Reader.h"
-#include "DoubleType.h"
+#include "Code/Reader/Reader.h"
+#include "Code/DoubleType/DoubleType.h"
 
 
 class DoubleReader: public Reader{
