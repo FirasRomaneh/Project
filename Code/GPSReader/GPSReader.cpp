@@ -1,8 +1,10 @@
 #include "GPSReader.h"
 
 void GPSReader::Read(std::string path, int Readindex){
+    //open the file
     std::ifstream ReadFile(path);
     std::string Read;
+    //read first line
     std::getline(ReadFile, Read);
     GPSType* newGPS = new GPSType();
     std::time_t newTime = 0;
@@ -10,9 +12,10 @@ void GPSReader::Read(std::string path, int Readindex){
     bool Write = true;
     extern int Work;
     while (Work){
-        if(Write){
+        if(Write){ //if the write data to DataStore, Read newData.
             std::getline(ReadFile, Read);
-            if(!ReadFile.eof()){
+            if(!ReadFile.eof()){ //if the file still have data, read the new line.
+                //split the read line to get the TS and The Data.
                 std::vector<std::string> split;
                 std::stringstream tempString(Read);
                 std::string temp;
@@ -25,17 +28,17 @@ void GPSReader::Read(std::string path, int Readindex){
                 newData.first = std::stod(split.at(1));
                 newData.second = std::stod(split.at(2));
                 newGPS->setData(newData);
-            } else{
+            } else{ //if the file don't have newData, Finish the read.
                 goto finish;
             }
         }
-        if(CM->getTS() >= newTime){
+        if(CM->getTS() >= newTime){ //if the Time of the newData less than TS of Front, Write The NewData to DataStore.
             DS->Write(newGPS, Readindex);
             Write = true;
-        } else{
+        } else{ //Set Write to false to wait to write the NewData to DataStore.
             Write = false;
         }
     }
-    finish:
+    finish: //close the file.
     ReadFile.close();
 }

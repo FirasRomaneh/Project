@@ -18,6 +18,9 @@ class DoubleType : public Type{
         std::time_t getTimeStamp() override{
             return TimeStamp;
         }
+        void setTimeStamp(std::time_t TimeStamp) override{
+            this->TimeStamp = TimeStamp;
+        }
     private:
         double data;
 };

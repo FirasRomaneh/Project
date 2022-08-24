@@ -11,6 +11,7 @@ class DataStore{
         static DataStore* instance;
     private:
         DataStore(){
+            //initialize AllData to it size 9
             AllData.push_back(nullptr);
             AllData.push_back(nullptr);
             AllData.push_back(nullptr);

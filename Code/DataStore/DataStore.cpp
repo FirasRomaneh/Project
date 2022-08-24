@@ -9,7 +9,7 @@ DataStore* DataStore::getInstance(){
 
 void DataStore::Write(Type* newdata, int index){
     AllData_Mutex.lock();
-    if(newdata != nullptr){
+    if(newdata != nullptr){ //if the pointer of the newData don't equal null, update the Data in DataStore
         AllData.at(index) = newdata;
     }
     AllData_Mutex.unlock();
